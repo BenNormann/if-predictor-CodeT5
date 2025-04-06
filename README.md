@@ -31,9 +31,7 @@ pip install -r requirements.txt
 
 # Extract dataset
 mkdir -p data/raw
-unzip datarawif.zip -d data/raw
-# OR if using 7z file:
-# 7z x datarawif.7z -odata/raw
+# get from _____
 ```
 
 The dataset should be extracted as `data/raw/datarawif.jsonl`.
@@ -49,7 +47,7 @@ Before training the model, you need to preprocess the raw data to extract if-sta
 mkdir -p data/processed
 
 # Run preprocessing script
-python src/data_processing/create_filtered_dataset.py
+python src/data_processing/preprocess.py
 ```
 
 This preprocessing will:
@@ -75,7 +73,7 @@ The default settings will:
 
 ### Advanced Options
 
-If you need to customize training, the following parameters are available:
+If you need to customize training, the following parameters are available (look at config.py):
 
 ```bash
 --data_dir PATH           # Path to the processed data directory
@@ -105,4 +103,4 @@ You can evaluate the model on the test set using:
 python src/evaluation/evaluate.py --model_dir saved_models/best_model
 ```
 
-Lower perplexity values and higher CodeBLEU scores indicate better model performance.
+Higher BLEU scores indicate better model performance.

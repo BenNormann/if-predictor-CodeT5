@@ -1,6 +1,6 @@
 data/processed/test.csv
 data/processed/train.csv
-data/processed/validation.csv
+data/processed/val.csv
 data/raw/datarawif.jsonl
 data/raw/dataraw.jsonl
 saved_models/best_model/*
