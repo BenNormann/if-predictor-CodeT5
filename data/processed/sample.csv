@@ -1,0 +1,128 @@
+"target","masked_code","original_code"
+"if os.path.isdir(self.e.output_dir): <TAB> shutil.rmtree(self.e.output_dir)","<mask>: <TAB> shutil.rmtree(self.e.output_dir)","def run(self, args):
+    if os.path.isdir(self.e.output_dir):
+        shutil.rmtree(self.e.output_dir)"
+"if v is undefined: <TAB> raise KeyError( args[0] )","<mask>: <TAB> raise KeyError( args[0] )","def wrapper(args,kwargs):
+          v = object[ args[0] ]
+          if v is undefined:
+              raise KeyError( args[0] )"
+"if n.id not in finfo['locals']: continue","<mask>: continue","def inline_function(self, node):
+       name = self.visit(node.func)
+       fnode = self._global_functions[ name ]
+       fnode = copy.deepcopy( fnode )
+       finfo = inspect_function( fnode )
+       remap = {}
+       for n in finfo['name_nodes']:
+           if n.id not in finfo['locals']: continue
+
+           if isinstance(n.id, ast.Name):
+               raise RuntimeError
+
+           if n.id not in remap:
+               new_name = n.id + '_%s'%self._inline_ids
+               remap[ n.id ] = new_name
+               self._inline_ids += 1
+
+           n.id = remap[ n.id ]
+
+       if remap:
+           self.writer.write( self.inline_helper_remap_names(remap) )
+           for n in remap:
+               if n in finfo['typedefs']:
+                   self._func_typedefs[ remap[n] ] = finfo['typedefs'][n]
+
+       offset = len(fnode.args.args) - len(fnode.args.defaults)
+       for i,ad in enumerate(fnode.args.args):
+           if i < len(node.args):
+               ac = self.visit( node.args[i] )
+           else:
+               assert fnode.args.defaults
+               dindex = i - offset
+               ac = self.visit( fnode.args.defaults[dindex] )
+
+           ad = remap[ self.visit(ad) ]
+           self.writer.write( ""%s = %s"" %(ad, ac) )
+
+
+       return_id = name + str(self._inline_ids)
+       self._inline.append( return_id )
+
+       self.writer.write( self.inline_helper_return_id( return_id ))
+       
+       if True:
+           self._inline_breakout = True
+           self.writer.write('while True:')
+           self.writer.push()
+           for b in fnode.body:
+               self.visit(b)
+
+           if not len( finfo['return_nodes'] ):
+               self.writer.write('break')
+           self.writer.pull()
+           
+       else:
+           for b in fnode.body:
+               self.visit(b)
+
+       if self._inline.pop() != return_id:
+           raise RuntimeError
+
+       for n in remap:
+           gname = remap[n]
+           for n in finfo['name_nodes']:
+               if n.id == gname:
+                   n.id = n
+
+       return '__returns__%s' %return_id"
+"if ispage(resource) and not ignorelines(line): <TAB> pagecount = pagecount + 1 <TAB> hits[resource] = hits.get(resource,0) + 1 <TAB> lastres = resource <TAB> line = line.replace('\\""','&quot;')  <TAB> referrer = line.split('""')[-4] <TAB> if len(referrer) > 1 and referrer.find(thisdomain) == -1: <TAB> <TAB> querydict = cgi.parse_qs(referrer.split(""?"")[-1]) <TAB> <TAB> if referrer.count("".yahoo.""): <TAB> <TAB> <TAB> q = querydict.get(""p"") <TAB> <TAB> else: q = querydict.get(""q"") <TAB> <TAB> if q:  <TAB> <TAB> <TAB> q = q[0].lower() <TAB> <TAB> <TAB> queries[q] = queries.get(q,0) + 1 <TAB> <TAB> referrers.append([referrer, q])","<mask>: <TAB> pagecount = pagecount + 1 <TAB> hits[resource] = hits.get(resource,0) + 1 <TAB> lastres = resource <TAB> line = line.replace('\\""','&quot;')  <TAB> referrer = line.split('""')[-4] <TAB> if len(referrer) > 1 and referrer.find(thisdomain) == -1: <TAB> <TAB> querydict = cgi.parse_qs(referrer.split(""?"")[-1]) <TAB> <TAB> if referrer.count("".yahoo.""): <TAB> <TAB> <TAB> q = querydict.get(""p"") <TAB> <TAB> else: q = querydict.get(""q"") <TAB> <TAB> if q:  <TAB> <TAB> <TAB> q = q[0].lower() <TAB> <TAB> <TAB> queries[q] = queries.get(q,0) + 1 <TAB> <TAB> referrers.append([referrer, q])","def getOverview():
+
+    t0 = time.time()
+    overview = {'cgiloc':cgiloc}
+    hits = {}
+    pagecount = 0
+    overview[""totalhits""] = len(loglines)
+    referrers = []
+    queries = {}
+    timeoffirsthit = loglines[0].split(' ')[3].replace('[','')
+    
+    for line in loglines:
+        resource = line.split(' ')[6]
+        if ispage(resource) and not ignorelines(line):
+            pagecount = pagecount + 1
+            hits[resource] = hits.get(resource,0) + 1
+            lastres = resource
+            line = line.replace('\\""','&quot;') 
+            referrer = line.split('""')[-4]
+            if len(referrer) > 1 and referrer.find(thisdomain) == -1:
+                
+                querydict = cgi.parse_qs(referrer.split(""?"")[-1])
+                if referrer.count("".yahoo.""):
+                    q = querydict.get(""p"")
+                else: q = querydict.get(""q"")
+                if q: 
+                    q = q[0].lower()
+                    queries[q] = queries.get(q,0) + 1
+                referrers.append([referrer, q])
+                
+    t1 = time.time()
+    overview[""timing""] = int((t1 - t0) * 1000)
+    overview[""logfile""] = logfile
+    overview[""timeoffirsthit""] = timeoffirsthit    
+    overview[""hits""] = hits
+    overview[""lastrequest""] = lastres
+    overview[""pagecount""] = pagecount
+    overview[""referrers""] = referrers
+    overview[""queries""] = queries
+    hourssince, minutessince = timeSinceApacheDate(timeoffirsthit)
+    pagehitsperhour = pagecount / (hourssince + ( float(minutessince) / 60 ))
+    overview[""hourssince""], overview[""minutessince""] = hourssince, minutessince
+    overview[""pagehitsperhour""] = int(round(pagehitsperhour))
+    
+    return overview"
+"if len(tests) == 0: return True","<mask>: return True","def ShouldRun(self, rel_path, tests):
+  if len(tests) == 0:
+    return True
+  for test in tests:
+    if test in rel_path:
+      return True
+  return False"
