@@ -14,12 +14,6 @@ This project implements a **fine-tuned CodeT5 model** for if-statement condition
 - Python 3.9+
 - Required packages: torch, transformers, datasets, evaluate, pandas, numpy, sacrebleu, ast, tqdm, scikit-learn
 
-### Data Download
-The dataset files are too large to be included in this repository. Please download them separately:
-
-1. Download the `datarawif.zip` or `datarawif.7z` file from [this Google Drive link](#) (replace with your actual download link)
-2. Place the file in the project root directory
-
 ### Installation
 ```bash
 # Clone repository
@@ -34,7 +28,13 @@ mkdir -p data/raw
 # get from _____
 ```
 
-The dataset should be extracted as `data/raw/datarawif.jsonl`.
+### Data Download
+The dataset files are too large to be included in this repository. Please download them separately:
+
+1. Download the `datarawif.zip` or `datarawif.7z` file from [https://drive.google.com/drive/folders/1_4ouIZYNFAlSmozBxOlgoqmPOW4sX5Qk?usp=sharing](#)
+2. Place the file in the project data/raw directory
+
+3. Extract the dataset should and name as `data/raw/datarawif.jsonl`.
 
 ## 3. Running Options
 
